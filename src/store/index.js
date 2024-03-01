@@ -2,10 +2,6 @@ import {getMs} from "../service";
 
 export const store = Vue.reactive({
     state: {
-        login: {
-            account: 'admin',
-            password: 1234
-        },
         web: {
             title: '快樂旅遊網',
             subtitle: '快樂的旅遊 快樂的旅遊 快樂的旅遊',
@@ -26,7 +22,7 @@ export const store = Vue.reactive({
         sign_state (store, state) {
             store.state.web.manage = state
             if (state === true)
-                this.currentLayout(store, 'VueHome')
+                this.currentLayout(store, 'Home')
         },
         currentLayout (store, layout) {
             store.state.web.layout = layout

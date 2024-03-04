@@ -5,9 +5,10 @@ import msgDel from "../../components/msgDel.js";
 export default {
     setup() {
         let ms = Vue.inject('ms')
-
+        let ord = Vue.ref([])
         return {
-            data: ms
+            data: ms,
+            ord: ord
         }
     },
     template: `
@@ -52,11 +53,11 @@ export default {
             </div>
             </div>
             <div class="" style="width: 150px" v-if="dt.img !== 'NULL'">
-                <img class="w-100 h-100 img-thumbnail" :src="'../../img/' + dt.img" style="object-fit: cover">
+                <img class="w-100 h-100 img-thumbnail" :src="'../../img/' + dt.img" style="object-fit: cover" alt=".">
             </div>
             <div class="border-left" style="width: 200px">
-                <input class="form-control" :placeholder="dt.ord">
-                <div class="d-flex flex-row justify-content-between">
+                <input class="form-control" :placeholder="dt.ord" v-model="ord[dt.id]">
+                <div class="d-flex flex-row justify-content-between" v-if="ord[dt.id] === dt.ord">
                     <button class="btn btn-outline-warning" data-toggle="modal" data-target="#msgUpd">編輯</button>
                     <button class="btn btn-outline-danger" data-toggle="modal" data-target="#msgDel">刪除</button>
                 </div>

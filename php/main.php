@@ -3,8 +3,12 @@ session_start();
 date_default_timezone_set('Asia/Taipei');
 $mysqli = new mysqli('localhost', 'admin', '1234', 'db_nsrc_54t');
 $data = json_decode(file_get_contents('php://input'), true);
-
-if ($_GET['cmd'] == 'getMs') {
+if ($_GET['cmd'] == 'getDt') {
+    $time = strtotime($data['year'] . '-' . $data['month']);
+    $arr = array_merge(array_fill(0, date('w', $time), 0), range(1, date('t', $time)));
+    $arr = array_merge($arr, array_fill(0, 7 - (count($arr) % 7), 0));
+    echo json_encode($arr);
+} elseif ($_GET['cmd'] == 'getMs') {
     echo json_encode($mysqli->query("select * from ms join user on ms.fk = user.id order by top desc, ms.update_at desc")->fetch_all(MYSQLI_ASSOC));
 } elseif ($_GET['cmd'] == 'getRm') {
     echo json_encode($mysqli->query("select * from ms join user on ms.fk = user.id order by top desc, ms.update_at desc")->fetch_all(MYSQLI_ASSOC));

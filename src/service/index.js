@@ -3,6 +3,8 @@ const PATH = '../../php'
 
 
 // get
+export function getDt (data) { return $.post(`${PATH}/main.php?cmd=getDt`, JSON.stringify(data)).then(res => JSON.parse(res)) }
+
 export function getMs () { return $.post(`${PATH}/main.php?cmd=getMs`).then(res => JSON.parse(res)) }
 
 export function getRm () { return $.post(`${PATH}/main.php?cmd=getRm`).then(res => JSON.parse(res)) }

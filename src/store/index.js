@@ -7,7 +7,7 @@ export const store = Vue.reactive({
             subtitle: '快樂的旅遊 快樂的旅遊 快樂的旅遊',
             manage: false,
             layout: 'Home',
-            view: 'room'
+            view: 'msg'
         },
         ms_form: {
             name: null,

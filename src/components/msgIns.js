@@ -15,7 +15,6 @@ export default {
                 store.state.ms_form.img = reader.result
             }
             reader.readAsDataURL(file)
-
         }
         let ms = Vue.inject('ms')
         let submit = () => {

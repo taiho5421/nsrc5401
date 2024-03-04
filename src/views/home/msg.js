@@ -6,9 +6,17 @@ export default {
     setup() {
         let ms = Vue.inject('ms')
         let ord = Vue.ref([])
+        let src = Vue.ref([])
+        let setSrc = (data) => {
+            src.value = JSON.parse(JSON.stringify(data))
+        src.value.img = null
+        }
         return {
             data: ms,
-            ord: ord
+            ord: ord,
+            src: src,
+
+            setSrc: (data) => setSrc(data)
         }
     },
     template: `
@@ -36,37 +44,38 @@ export default {
                 </div>
                 <div>
                     <span class="badge badge-info badge-pill mr-2">信箱</span>
-                    <small v-if="dt.email_show">{{dt.email}}</small>
+                    <small v-if="dt.email_show === '1' && dt.delete_at === dt.create_at">{{dt.email}}</small>
                 </div>
                 <div>
                     <span class="badge badge-info badge-pill mr-2">電話</span>
-                    <small v-if="dt.phone_show">{{dt.phone}}</small>
+                    <small v-if="dt.phone_show === '1' && dt.delete_at === dt.create_at">{{dt.phone}}</small>
                 </div>
             </div>
             <div class="flex-fill">
             <div class="h-50">
-                <p>{{dt.msg}}</p>
+                <p v-if="dt.delete_at === dt.create_at">{{dt.msg}}</p>
+                <p v-else>已刪除</p>
             </div>
-            <div class="h-50 border-top" v-if="dt.replies !== 'NULL'">
+            <div class="h-50 border-top" v-if="dt.replies !== null && dt.delete_at === dt.create_at">
                 <span class="badge-secondary badge-pill">管理者回覆:</span>
                 <p class="ml-4">{{dt.replies}}</p>
             </div>
             </div>
-            <div class="" style="width: 150px" v-if="dt.img !== 'NULL'">
+            <div class="" style="width: 150px" v-if="dt.img !== 'NULL' && dt.delete_at === dt.create_at">
                 <img class="w-100 h-100 img-thumbnail" :src="'../../img/' + dt.img" style="object-fit: cover" alt=".">
             </div>
             <div class="border-left" style="width: 200px">
-                <input class="form-control" :placeholder="dt.ord" v-model="ord[dt.id]">
+                <input class="form-control" :placeholder="dt.ord" v-model="ord[dt.id]" v-if="dt.delete_at === dt.create_at">
                 <div class="d-flex flex-row justify-content-between" v-if="ord[dt.id] === dt.ord">
-                    <button class="btn btn-outline-warning" data-toggle="modal" data-target="#msgUpd">編輯</button>
-                    <button class="btn btn-outline-danger" data-toggle="modal" data-target="#msgDel">刪除</button>
+                    <button class="btn btn-outline-warning" data-toggle="modal" data-target="#msgUpd" @click="setSrc(dt)">編輯</button>
+                    <button class="btn btn-outline-danger" data-toggle="modal" data-target="#msgDel" @click="setSrc(dt)">刪除</button>
                 </div>
             </div>
         </section>
     </article>
     <msgIns id="msgIns" />
-    <msgUpd id="msgUpd" />
-    <msgDel id="msgDel" />
+    <msgUpd id="msgUpd" :form="src" />
+    <msgDel id="msgDel" :form="src" />
     `,
     methods: {
 

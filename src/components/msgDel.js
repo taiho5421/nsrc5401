@@ -1,9 +1,16 @@
-export default {
-    setup() {
+import {delMs} from "../service";
 
+export default {
+    props: ['form'],
+    setup(props) {
+        let ms = Vue.inject('ms')
+        let submit = () => {
+            delMs(props.form).then(res => { ms.value = res })
+        }
 
         return {
-
+            props: props,
+            submit: submit,
         }
     },
     template: `
@@ -18,7 +25,7 @@ export default {
                 
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-success" data-dismiss="modal">確定</button>
+                    <button class="btn btn-success" data-dismiss="modal" @click="submit">確定</button>
                 </div>
             </div>
         </div>  

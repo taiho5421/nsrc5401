@@ -26,3 +26,7 @@ export function updRm (data) { return $.post(`${PATH}/main.php?cmd=updRm`, JSON.
 export function delMs (data) { return $.post(`${PATH}/main.php?cmd=delMs`, JSON.stringify(data)).then(getMs) }
 
 export function delRm (data) { return $.post(`${PATH}/main.php?cmd=delRm`, JSON.stringify(data)).then(getRm) }
+
+
+// captcha
+export function reCha () { return $.post(`${PATH}/gen.php`).then(res => JSON.parse(res)) }

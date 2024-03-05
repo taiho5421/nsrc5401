@@ -1,7 +1,7 @@
 <?php
 session_start();
 date_default_timezone_set('Asia/Taipei');
-$mysqli = new mysqli('localhost', 'admin', '1234', 'db_nsrc_54t');
+$mysqli = new mysqli('localhost', 'admin', '1234', 'db_nsrc_54');
 $data = json_decode(file_get_contents('php://input'), true);
 
 function getName($img1): string {
@@ -15,14 +15,50 @@ function getName($img1): string {
 }
 
 if ($_GET['cmd'] == 'getDt') {
+    $sql = $mysqli->query("select * from rm inner join user on rm.fk = user.user_id");
+    $date_arr = [];
+    while ($row = $sql->fetch_assoc()) {
+        $st = new DateTime($row['st_date']);
+        $ed = new DateTime($row['ed_date']);
+        $ed->modify('+1 day');
+        $in = new DateInterval('P1D');
+        $days = new DatePeriod($st, $in, $ed);
+        $date = [];
+        foreach ($days as $day) {
+            $date[] =  $day->format('Y-m-d');
+        }
+        $date_arr[] = array(
+            'date' => $date,
+            'room' => str_split($row['room'])
+        );
+    }
     $time = strtotime($data['year'] . '-' . $data['month']);
-    $arr = array_merge(array_fill(0, date('w', $time), 0), range(1, date('t', $time)));
-    $arr = array_merge($arr, array_fill(0, 7 - (count($arr) % 7), 0));
-    echo json_encode($arr);
+    $date = array_merge(array_fill(0, date('w', $time), 0), range(1, date('t', $time)));
+    $date = array_merge($date, array_fill(0, 7 - count($date) % 7, 0));
+    foreach ($date as $index => $value) {
+        $date[$index] = array(
+            'date' => $value != 0 ? date('Y-m-d', strtotime($data['year'] . '-' . $data['month'] . '-' . $value)) : '0000-00-00',
+            'room' => array_fill(0, 8, "0"),
+            'count' => 8
+        );
+    }
+    function wise_or($a, $b): string {
+        return ($a | $b);
+    }
+    foreach ($date as &$item) {
+        foreach ($date_arr as $arr) {
+            foreach ($arr['date'] as $value) {
+                if ($value == $item['date'])
+                    $item['room'] = array_map('wise_or', $item['room'], $arr['room']);
+            }
+        }
+        $item['count'] = array_count_values($item["room"])["0"];
+    }
+    echo json_encode($date);
 } elseif ($_GET['cmd'] == 'getMs') {
-    echo json_encode($mysqli->query("select * from ms join user on ms.fk = user.id order by top desc, ms.update_at desc")->fetch_all(MYSQLI_ASSOC));
+    echo json_encode($mysqli->query("select * from ms inner join user on ms.fk = user.user_id order by top desc, update_at desc")->fetch_all(MYSQLI_ASSOC));
 } elseif ($_GET['cmd'] == 'getRm') {
-    echo json_encode($mysqli->query("select * from ms join user on ms.fk = user.id order by top desc, ms.update_at desc")->fetch_all(MYSQLI_ASSOC));
+    echo json_encode($mysqli->query("select * from ms inner join user on ms.fk = user.user_id order by top desc, update_at desc")->fetch_all(MYSQLI_ASSOC));
 } elseif ($_GET['cmd'] == 'insMs') {
     $fileName = 'NULL';
     if (!empty($data['img'])) {
@@ -36,8 +72,8 @@ if ($_GET['cmd'] == 'getDt') {
 } elseif ($_GET['cmd'] == 'insRm') {
 
 } elseif ($_GET['cmd'] == 'updMs') {
-    $mysqli->query(sprintf("update user set name='%s', email='%s', phone='%s' where id='%s'",
-        $data['name'], $data['email'], $data['phone'], $data['id']));
+    $mysqli->query(sprintf("update user set name='%s', email='%s', phone='%s' where user_id='%s'",
+        $data['name'], $data['email'], $data['phone'], $data['user_id']));
     $mysqli->query(sprintf("update ms set msg='%s', ord='%s', email_show='%s', phone_show='%s' where ms_id='%s'",
         $data['msg'], $data['ord'], $data['email_show'], $data['phone_show'], $data['ms_id']));
     if (!empty($data['img'])) {

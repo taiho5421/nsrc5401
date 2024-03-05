@@ -1,31 +1,44 @@
 import {store} from "../../store";
+import {reCha} from "../../service";
 
 export default {
     setup() {
-        let login = {
+        let ms = Vue.ref(0);
+        reCha().then(res => { ms.value = res })
+        let login = Vue.ref({
             account: 'admin',
             password: '1234'
-        }
-        let input = {
+        })
+        let input = Vue.ref({
             account: null,
             password: null,
-        }
+            captcha: []
+        })
         let submit = () => {
-            if (input.account === login.account && input.password === login.password)
+            if (input.value.account === login.value.account && input.value.password === login.value.password)
                 store.mutations.sign_state(store, true)
             else
                 window.alert('登入失敗')
         }
+        let cls = () => {
+            input.value.account = null
+            input.value.password = null
+        }
+        let set =  () => {
+            reCha().then(res => { ms.value = res })
+        }
         return {
             login: login,
             input: input,
-            submit: submit
+            submit: submit,
+            cls: cls,
+            set: set,
+            ms: ms,
         }
     },
     template: `
     <article class="text-center">
         <h2>登入系統</h2>
-        {{input}}
     </article>
     <article class="">
         <section class="form-group">
@@ -38,6 +51,7 @@ export default {
         </section>
         <section class="form-group">
             <label>驗證:</label>
+            <img :src="'../../../php/img.php?i=' + t + '&' + ms" v-for="t in [0,1,2,3]" class="img" v-draggable="t">
             <input class="form-control">
         </section>
     </article>
@@ -48,18 +62,41 @@ export default {
     </article>
     `,
     methods: {
-        cls () {
-            this.input.account = null
-            this.input.password = null
-        },
-        set () {
-            console.log('err')
-        }
+
     },
     computed: {
 
     },
     components: {
 
+    },
+    directives: {
+        draggable: {
+            mounted (el, bind) {
+                $(el).draggable({
+                    revert: true,
+                    cursor: 'grabbing',
+                    drag (_, ui) {
+                        ui.helper.data('value', bind.value)
+                    }
+                })
+            },
+            beforeUnmount (el, bind) {
+                $(el).draggable('destroy')
+            }
+        },
+        droppable: {
+            mounted (el, bind) {
+                $(el).droppable({
+                    hoverClass: 'ui-state-hover',
+                    drop (_, ui) {
+                        bind.instance.input.captcha[bind.value] = ui.helper.data('value')
+                    }
+                })
+            },
+            beforeUnmount (el, bind) {
+                $(el).droppable('destroy')
+            }
+        }
     }
 }

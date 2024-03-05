@@ -65,8 +65,8 @@ export default {
                 <img class="w-100 h-100 img-thumbnail" :src="'../../img/' + dt.img" style="object-fit: cover" alt=".">
             </div>
             <div class="border-left" style="width: 200px">
-                <input class="form-control" :placeholder="dt.ord" v-model="ord[dt.id]" v-if="dt.delete_at === dt.create_at">
-                <div class="d-flex flex-row justify-content-between" v-if="ord[dt.id] === dt.ord">
+                <input class="form-control" :placeholder="dt.ord" v-model="ord[dt.user_id]" v-if="dt.delete_at === dt.create_at">
+                <div class="d-flex flex-row justify-content-between" v-if="ord[dt.user_id] === dt.ord && dt.delete_at === dt.create_at">
                     <button class="btn btn-outline-warning" data-toggle="modal" data-target="#msgUpd" @click="setSrc(dt)">編輯</button>
                     <button class="btn btn-outline-danger" data-toggle="modal" data-target="#msgDel" @click="setSrc(dt)">刪除</button>
                 </div>

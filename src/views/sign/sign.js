@@ -50,9 +50,11 @@ export default {
             <input class="form-control" v-model="input.password">
         </section>
         <section class="form-group">
-            <label>驗證:</label>
-            <img :src="'../../../php/img.php?i=' + t + '&' + ms" v-for="t in [0,1,2,3]" class="img" v-draggable="t">
-            <input class="form-control">
+            <label>驗證:</label><small class="text-danger">由小到大</small>
+            <img :src="'../../../php/img.php?i=' + t + '&' + ms" v-for="t in [0,1,2,3]" class="img" v-draggable="t" alt="">
+            <span class="mx-1"></span>
+            <img :src="'../../../php/img.php?i=' + input.captcha[t]" v-for="t in [0,1,2,3]" class="img" v-droppable="t" alt="">
+            {{input}}
         </section>
     </article>
     <article class="d-flex justify-content-between">

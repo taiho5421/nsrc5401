@@ -1,6 +1,7 @@
 import {getDt} from "../../service";
 import chRm from "../../components/chRm.js";
 import roomForm from "../../components/roomForm.js";
+import roomCheck from "../../components/roomCheck.js";
 
 export default {
     setup() {
@@ -105,8 +106,11 @@ export default {
             if (rm.value.length === 0)
                 window.alert('請選擇房間')
             else {
-                console.log('acc')
+                child.value = 'check'
             }
+        }
+        let abo = () => {
+            child.value = 'form'
         }
         return {
             year: year,
@@ -124,7 +128,8 @@ export default {
             isSelect: isSelect,
             handleSetRmNum,
             resetDate,
-            checkRmNum
+            checkRmNum,
+            abo,
         }
     },
     template: `
@@ -150,6 +155,7 @@ export default {
                         <div v-if="day[(i - 1) * 7 + j - 1].date !== '0000-00-00'">
                             <h4>{{ day[(i - 1) * 7 + j - 1].date.slice(-2) }}</h4>
                             <small>剩餘 {{ day[(i - 1) * 7 + j - 1].count }} 間</small>
+                            <small>$5000</small>
                         </div>
                     </td>
                 </tr>
@@ -161,10 +167,11 @@ export default {
                 <h3>訂房表單</h3>
             </section>
             <roomForm @update:rmNum="autoRm" @set:rmNum="handleSetRmNum" v-if="child === 'form'" :st="st == null ? null : st.toISOString().slice(0, 10)" :ed="ed == null ? null : ed.toISOString().slice(0, 10)" :rmNum="rmNum" :rm="rm" />
-            <section class="mt-3 justify-content-between d-flex p-4">
+            <section class="mt-3 justify-content-between d-flex p-4" v-if="child === 'form'">
                 <button class="btn btn-outline-success" @click="checkRmNum">確定</button>
                 <button class="btn btn-outline-danger" @click="resetDate">取消</button>
             </section>
+            <roomCheck :st="st" :ed="ed" :rm="rm" v-if="child === 'check'" @update:rm="abo" />
         </div>
     </article>
     <chRm id="chRm" :st="st == null ? null : st.toISOString().slice(0, 10)" :day="day" :rm="rm" :rmNum="rmNum" @update:rm="rm = $event" />
@@ -178,5 +185,6 @@ export default {
     components: {
         chRm,
         roomForm,
+        roomCheck,
     }
 }

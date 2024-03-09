@@ -38,12 +38,6 @@ export default {
                     <button class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <div class="card">
-                        <div>Room</div>
-                        {{ props.st }}
-                        {{ props.rm }}
-                        {{ props.day.find(item => item.date === props.st) }}
-                    </div>
                     <div class="d-flex flex-column">
                         <div class="d-flex flex-row justify-content-between my-2">
                             <button class="card align-items-center justify-content-center" v-for="i in 4" style="width: 6rem;height: 6rem" 

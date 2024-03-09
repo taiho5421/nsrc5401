@@ -20,10 +20,10 @@ export default {
         }
         let localRmNum = Vue.ref(props.rmNum)
         Vue.watch(() => props.rmNum, (newVal) => {
-            localRmNum.value = newVal;
+            localRmNum.value = newVal
         })
         Vue.watch(localRmNum, (newVal) => {
-            emit('set:rmNum', newVal);
+            emit('set:rmNum', newVal)
         })
         return {
             props,

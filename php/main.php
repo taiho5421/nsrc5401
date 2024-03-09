@@ -52,7 +52,7 @@ if ($_GET['cmd'] == 'getDt') {
                     $item['room'] = array_map('wise_or', $item['room'], $arr['room']);
             }
         }
-        $item['count'] = array_count_values($item["room"])["0"];
+        $item['count'] = array_count_values($item["room"])["0"]??0;
     }
     echo json_encode($date);
 } elseif ($_GET['cmd'] == 'getMs') {
@@ -70,7 +70,17 @@ if ($_GET['cmd'] == 'getDt') {
         $data['msg'], $fileName, $data['ord'], $mysqli->insert_id));
     echo json_encode('accuracy!!!');
 } elseif ($_GET['cmd'] == 'insRm') {
-
+    $count = $mysqli->query(sprintf("select count(*) as record from rm where DATE(create_at) = '%s'", $data['create_at']))->fetch_assoc()['record'];
+    $unix = strtotime($data['create_at']);
+    $unix = date('Ymd', $unix) . sprintf('%04d', $count + 1);
+    $str = "00000000";
+    foreach ($data['rm'] as $rm) {
+        $str[$rm - 1] = '1';
+    }
+    $mysqli->query(sprintf("insert into user(name, email, phone) value ('%s','%s','%s')",
+        $data['name'], $data['email'], $data['phone']));
+    $mysqli->query(sprintf("insert into rm(room, st_date, ed_date, note, total, deposit, create_at, num_id, fk) value ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+        $str, $data['st_date'], $data['ed_date'], $data['note'], $data['total'], $data['deposit'], $data['create_at'], $unix, $mysqli->insert_id));
 } elseif ($_GET['cmd'] == 'updMs') {
     $mysqli->query(sprintf("update user set name='%s', email='%s', phone='%s' where user_id='%s'",
         $data['name'], $data['email'], $data['phone'], $data['user_id']));
